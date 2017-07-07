@@ -1,0 +1,33 @@
+SRCS	= CWindow.cpp vec.cpp
+TARGET	= main
+
+LDLIBS		= -lgdi32 -mconsole
+# -mwindows > 標準出力が出なくなる。
+# -static > main.o:(.text[__clang_call_terminate]+0x7): `__imp___cxa_begin_catch' に対する定義されていない参照です
+
+OBJS	= $(TARGET).o $(SRCS:.cpp=.o)
+
+all : main.exe
+
+main.exe : makefile $(OBJS)
+	clang++ -o main.exe $(OBJS) $(LDLIBS)
+
+main.o : main.cpp
+	clang++ $(CPPFLAGS) -c -o $@ main.cpp
+
+CWindow.o : CWindow.cpp CWindow.h
+	clang++ $(CPPFLAGS) -c -o $@ CWindow.cpp
+
+vec.o : vec.cpp vec.h
+	clang++ $(CPPFLAGS) -c -o $@ vec.cpp
+
+s : $(SRCS)
+	clang++ $(CPPFLAGS) -S main.cpp
+	clang++ $(CPPFLAGS) -S CWindow.cpp
+	clang++ $(CPPFLAGS) -S vec.cpp
+
+
+clean:
+	rm -f *.o *.exe
+
+
