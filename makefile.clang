@@ -9,7 +9,7 @@ OBJS	= $(TARGET).o $(SRCS:.cpp=.o)
 
 all : main.exe
 
-main.exe : makefile $(OBJS)
+main.exe : makefile.clang $(OBJS)
 	clang++ -o main.exe $(OBJS) $(LDLIBS)
 
 main.o : main.cpp

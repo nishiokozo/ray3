@@ -1,13 +1,19 @@
-#include <windows.h>
-#include <iostream>
-#include <memory.h>
-#include <math.h>
+// ver 1.1 2017/07/07 
+#include	<iostream>
 using namespace std;
+#include <string>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <ctype.h>
+#include <windows.h>
+#include <float.h>
+
 #include "CWindow.h"
 #include "vec.h"
 
 
-const	static	double INFINIT = CC_MAX;
+const	static	double INFINIT = DBL_MAX;
 
 struct  COMMON
 {
@@ -83,7 +89,7 @@ struct SPHERE : public COMMON
 		memset( this, 0, sizeof(*this));
 		P = _P;
 		r = _r;
-		C = _C;
+		C = max(0,min(1,_C));
 		valReflectance	= _valReflection;
 		valRefractive	= _valRefractive;
 		valPower= _valPower;
@@ -127,6 +133,8 @@ class	Test
 ////////////////////////////////////////////////////////////////////////////////
 {
 public:
+int m_cntRay;
+
 //------------------------------------------------------------------------------
 bool raycast( SURFACE& sur, const vec3& P, const vec3& I, double max_t, double valRefractive )
 //------------------------------------------------------------------------------
@@ -424,9 +432,9 @@ vec3	getAsmosphereLight( const vec3& I )
 	return	col;
 }
 
-SPHERE*	m_tblSphere[100];
-PLATE*	m_tblPlate[100];
-LIGHT*	m_tblLight[100];
+SPHERE*	m_tblSphere[1000];
+PLATE*	m_tblPlate[1000];
+LIGHT*	m_tblLight[1000];
 int		m_cntSphere;
 int		m_cntPlate;
 int		m_cntLight;
@@ -458,9 +466,11 @@ Test()
 //------------------------------------------------------------------------------
 {
 	memset( this, 0, sizeof(*this) );
+	float r,s,pw,e,tm,rl,rr;
+	vec3	P,C,N;
 
 #if 0
-	Entry( new PLATE( vec3( 0   ,  0 ,  0    ), normalize(vec3(0, 1,0))  , vec3(1  , 1.0, 1.0), 0.3, 20, 0.0, 0.0 ) );
+	Entry( new PLATE( P=vec3( 0  ,  0 ,0.0),N=vec3(0,1,0),C=vec3(0.8,0.8,0.8),rl=0.5,rr=1.0 ,pw=20,e= 0.0,tm=0.0 ) );
 	Entry( new SPHERE(vec3( 0.0 , 1.25, -2       ),   0.5 , vec3(1  , 0.2, 0.2), 0.5, 1.0, 20, 0.0, 0.0 ) );
 	Entry( new SPHERE(vec3( 0.0 , 0.5 , -2-0.433 ),   0.5 , vec3(0.0, 0.0, 0.0), 1.0, 1.0, 20, 0.0, 0.0 ) );
 	Entry( new SPHERE(vec3( 0.5 , 0.5 , -2+0.433 ),   0.5 , vec3(0.2, 0.2, 1.0), 0.5, 1.0, 20, 0.0, 0.0 ) );
@@ -479,20 +489,25 @@ Test()
 	Entry( new LIGHT( vec3( 0   ,  20 ,  -2 ), vec3(1.0, 1.0, 1.0)*800 ) );
 	A = vec3( 0.2,0.4,0.6)*1.0;
 #endif
-#if 0 // ring
-	Entry( new PLATE( vec3( 0   ,  0 ,  0    ), normalize(vec3(0, 1,0))  , vec3(0.8, 0.8, 0.8), 0.5, 1.0, 20, 0.0, 0.0 ) );
-	Entry( new SPHERE(vec3( 0 , 1.0 , 0 ),   0.5 , vec3(0.0, 0.0, 0.0), 0.5, 1.0 , 20, 0.0, 0.0 ) );
-	int	max = 16;
+#if 1 // ring
+	Entry( new PLATE( P=vec3( 0  ,  0 ,0.0),N=vec3(0,1,0),C=vec3(0.8,0.8,0.8),rl=0.5,rr=1.0 ,pw=20,e= 0.0,tm=0.0 ) );
+	Entry( new SPHERE(  vec3( 0 , 1.0 , 0 ),   0.5 ,  vec3(0.0, 0.0, 0.0),   0.5,   1.0 ,  100,  0.0,  0.0 ) );
+	int	max = 16*3;
 	for ( int i = 0 ; i < max ; i++ )
 	{
-		double	th = (double)i *(pi/max) * 2;
+		double	th  = (double)i *(pi/360)*16 * 3;
+		double	th2 = (double)i *(pi/360)*16 * 0.5;
 		double	x = cos(th);
 		double	z = sin(th) ;
-		double	y = (x+z)/2 +1.0;
-		Entry( new SPHERE(vec3( x , y , z ),   0.2 , vec3(x, x+y, z), 0.5 , 20,10.0, 0.0 ) );
+		double	y = cos(th2) +1.2;
+//		double	y = (x+z)/2 +1.0;
+		Entry( new SPHERE(P=vec3( x , y , z ),r=0.2 ,C=vec3( x, y,  z) ,rl=0.2,rr=0.0 ,pw=100,e= 0.0,tm=0.0 ) );
+
 	}
-	Entry( new LIGHT( vec3( 0   ,  20 ,  0 ), vec3(1,1,1)*800 )  );
-	Entry( new LIGHT( vec3(-20   ,  20 ,  0 ), vec3(1,1,1)*800 )  );
+	Entry( new LIGHT( vec3( 0   ,  30 ,  0 ), vec3(1,1,1)*1800 )  );
+	Entry( new LIGHT( vec3(-30   ,  30 ,  0 ), vec3(0.5,1,1)*1800 )  );
+	Entry( new LIGHT( vec3(60   ,  80 ,  0 ), vec3(1,1,0.5)*4800 )  );
+	Entry( new LIGHT( vec3(-60   ,  80 , 0 ), vec3(1,0.5,1)*4800 )  );
 	A = vec3( 0.2,0.4,0.6)*0.0;
 #endif
 #if 0 //twin balls
@@ -502,24 +517,21 @@ Test()
 	Entry( new LIGHT( vec3( 0   ,  20 ,  -2 ), vec3(1.0, 1.0, 1.0)*1800 ) );
 	A = vec3( 0.2,0.4,0.6)*1.0;
 #endif
-#if 1 //2 balls
-	float r,s,p,e,t,rl,rr;
-	vec3	P,C,N;
-	Entry( new PLATE( P=vec3(0  , 0 ,0.0),N=vec3(0,1,0),C=vec3(0.8,0.8,0.8),rl=0.5,rr=1.0 ,p=20,e= 0.0,t=0.0 ) );
-//	Entry( new SPHERE(P=vec3( 1.0,1.0, 3.0),r=0.9       ,C=vec3(1.0,0.5,0.5),rl=0.3,rr=1.35,p=20,e=10.0,t=1.0 ) );
+#if 0 //2 balls
+//	Entry( new PLATE( P=vec3(0  , 0 ,0.0),N=vec3(0,1,0),C=vec3(0.8,0.8,0.8),rl=0.5,rr=1.0 ,pw=20,e= 0.0,tm=0.0 ) );
+//	Entry( new SPHERE(P=vec3( 1.0,1.0, 3.0),r=0.9       ,C=vec3(1.0,0.5,0.5),rl=0.3,rr=1.35,pw=20,e=10.0,tm=1.0 ) );
 
-//	Entry( new SPHERE(P=vec3( 1.0,0.25, 3),r=1.0      ,C=vec3(1.0,1.0,1.0),rl=0.5,rr=1.0 ,p=20,e=10.0,t=0.0 ) );
-//	Entry( new SPHERE(P=vec3( 0.9,1.5,-1.0),r=1.0       ,C=vec3(0.0,0.0,1.0),rl=0.0,rr=1.02,p=20,e=10.0,t=1.0 ) );
-	Entry( new SPHERE(P=vec3( 0.5,1.0,3.0),r=0.5       ,C=vec3(0.0,0.0,1.0),rl=0.5,rr=1.0 ,p=20,e=10.0,t=0.0 ) );
-	Entry( new SPHERE(P=vec3(-0.5,1.0,3.0),r=0.5       ,C=vec3(0.0,1.0,0.0),rl=0.5,rr=1.0 ,p=20,e=10.0,t=0.0 ) );
-	Entry( new SPHERE(P=vec3( 0.0,1.5,3.0),r=0.5       ,C=vec3(1.0,0.0,0.0),rl=0.5,rr=1.0 ,p=20,e=10.0,t=0.0 ) );
-	Entry( new SPHERE(P=vec3( 0.0,0.5,3.0),r=0.5       ,C=vec3(1.0,1.0,0.0),rl=0.5,rr=1.0 ,p=20,e=10.0,t=0.0 ) );
-	Entry( new SPHERE(P=vec3( 0.0,1.0,2.75),r=0.25      ,C=vec3(1.0,1.0,1.0),rl=0.5,rr=1.0 ,p=20,e=10.0,t=0.0 ) );
+//	Entry( new SPHERE(P=vec3( 1.0,0.25, 3),r=1.0      ,C=vec3(1.0,1.0,1.0),rl=0.5,rr=1.0 ,pw=20,e=10.0,tm=0.0 ) );
+//	Entry( new SPHERE(P=vec3( 0.9,1.5,-1.0),r=1.0       ,C=vec3(0.0,0.0,1.0),rl=0.0,rr=1.02,pw=20,e=10.0,tm=1.0 ) );
+	Entry( new SPHERE(P=vec3( 0.5,1.0,3.0),r=0.5       ,C=vec3(0.0,0.0,1.0),rl=0.5,rr=1.0 ,pw=20,e=10.0,tm=0.0 ) );
+	Entry( new SPHERE(P=vec3(-0.5,1.0,3.0),r=0.5       ,C=vec3(0.0,1.0,0.0),rl=0.5,rr=1.0 ,pw=20,e=10.0,tm=0.0 ) );
+	Entry( new SPHERE(P=vec3( 0.0,1.5,3.0),r=0.5       ,C=vec3(1.0,0.0,0.0),rl=0.5,rr=1.0 ,pw=20,e=10.0,tm=0.0 ) );
+	Entry( new SPHERE(P=vec3( 0.0,0.5,3.0),r=0.5       ,C=vec3(1.0,1.0,0.0),rl=0.5,rr=1.0 ,pw=20,e=10.0,tm=0.0 ) );
+	Entry( new SPHERE(P=vec3( 0.0,1.0,2.75),r=0.25      ,C=vec3(1.0,1.0,1.0),rl=0.5,rr=1.0 ,pw=20,e=10.0,tm=0.0 ) );
 	Entry( new LIGHT( P=vec3( 1.0 ,15, 0 )          ,C=vec3(1,1,1)*360 )  );
 	A = vec3( 0.2,0.4,0.6)*0.5;
 #endif
 }
-int g_cnt;
 
 //------------------------------------------------------------------------------
 vec3 Raytrack( vec3 P, vec3 I )
@@ -527,8 +539,8 @@ vec3 Raytrack( vec3 P, vec3 I )
 {
 	vec3 ret = vec3(0,0,0);
 
-	if ( g_cnt > 5 ) return ret;
-	g_cnt++;
+	if ( m_cntRay > 5 ) return ret;
+	m_cntRay++;
 
 	SURFACE sur;
 	LIGHT&	lgt = *m_tblLight[0];
@@ -598,11 +610,11 @@ void	Paint( unsigned char* to, int height, int width, int size )
 			double	valRefractive = 1.0;
 			int	cnt = 0;
 
-			g_cnt = 0;
+			m_cntRay = 0;
 			int	cntNext = 0;
 	 		C = Raytrack( P, I );
-			if ( g_cnt > cntMax ) cntMax = g_cnt;
-			cntRay+= g_cnt;
+			if ( m_cntRay > cntMax ) cntMax = m_cntRay;
+			cntRay+= m_cntRay;
 
 			int r = min( 255, (int)(255*C.r) );
 			int g = min( 255, (int)(255*C.g) );
@@ -619,26 +631,6 @@ void	Paint( unsigned char* to, int height, int width, int size )
 };	
 
 
-
-#define	SIZ 512
-
-int		*buf= new int[SIZ*SIZ];
-vec3	b1(-0.2, 0, 0);
-vec3	b2( 0.2, 0, 0);
-
-vec3	c1(0,11,255);
-vec3	c2(255,11,0);
-
-vec3	light( 0,0,2);
-
-//------------------------------------------------------------------------------
-void	funcUpdate( CWindow& win )
-//------------------------------------------------------------------------------
-{
-	
-	
-
-}
 static LARGE_INTEGER nFreq;
 //------------------------------------------------------------------------------
 double	getPerformanceTime()
@@ -656,35 +648,26 @@ double	getPerformanceTime()
 int main()
 //------------------------------------------------------------------------------
 {
+	#define SIZ 512
 	CWindow	win(SIZ,SIZ,"Voxel Metaball   " __DATE__, RENDER_GDI24);
 
-//	win.entryCallbackUpdate( funcUpdate );
+//		printf("CC_MAX %fsec\n", INFINIT );
+
 
 	Test test;
 
-/*
-				static LARGE_INTEGER nFreq, time1, time2;
-				QueryPerformanceFrequency(&nFreq);
-
-				QueryPerformanceCounter(&time2);
-
-				double time = ((double)(time2.QuadPart - time1.QuadPart) / (double)nFreq.QuadPart);
-				QueryPerformanceCounter(&time1);
-
-		printf( "paint %f %d %d \n", time*1000, (int)nFreq.QuadPart, (int)(time2.QuadPart - time1.QuadPart) );
-*/			
-
+	int cnt = 0;
 
 	while( win.runMessage() )
 	{
 		double	time1 = getPerformanceTime();
+
 		test.Paint( win.GDI_bPixelBits, win.m_height, win.m_width, 3 );
+
 		double	time2 = getPerformanceTime();
 
-		printf("time %fsec\n", time2-time1 );
+		if ( cnt++ < 3 ) printf("time %fsec\n", time2-time1 );
 	}
-
-//	win.run();
 
 	return 0;
 

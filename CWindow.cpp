@@ -1,11 +1,13 @@
+// ver 1.1 2017/07/07 
+
 #include <stdio.h>
 #include <windows.h>
 
 #include "CWindow.h"
 
 
-void	(*g_callbackPaint)(HDC)=0;
-void	(*g_callbackUpdate)(CWindow&)=0;
+//void	(*g_callbackPaint)(HDC)=0;
+//void	(*g_callbackUpdate)(CWindow&)=0;
 
 
 //------------------------------------------------------------------------------
@@ -71,7 +73,7 @@ static	LRESULT CALLBACK WinProc
 					PAINTSTRUCT ps;
 					HDC hdc = BeginPaint(m_hWnd , &ps);
 
-					if ( g_callbackPaint ) g_callbackPaint( hdc );
+//					if ( g_callbackPaint ) g_callbackPaint( hdc );
 
 					EndPaint(m_hWnd , &ps);
 				}
@@ -108,6 +110,7 @@ static	LRESULT CALLBACK WinProc
 }
 
 
+/*
 //------------------------------------------------------------------------------
 void	CWindow::entryCallbackPaint( void(*func)(HDC) )
 //------------------------------------------------------------------------------
@@ -120,6 +123,7 @@ void	 CWindow::entryCallbackUpdate( void(*func)(CWindow&) )
 {
 	g_callbackUpdate = func;
 }
+*/
 
 //------------------------------------------------------------------------------
 bool CWindow::runMessage()
@@ -134,7 +138,7 @@ bool CWindow::runMessage()
 			if (tMsg.message == WM_QUIT) break;
 		}
 		if (tMsg.message == WM_QUIT) break;
-		if ( g_callbackUpdate ) g_callbackUpdate(*this);
+//		if ( g_callbackUpdate ) g_callbackUpdate(*this);
 
 		switch( m_render )
 		{
@@ -147,6 +151,7 @@ bool CWindow::runMessage()
 //	return( tMsg.wParam );
 	return	false;
 }
+/*
 //------------------------------------------------------------------------------
 int CWindow::run()
 //------------------------------------------------------------------------------
@@ -171,6 +176,7 @@ int CWindow::run()
 	}
 	return( tMsg.wParam );
 }
+*/
 //------------------------------------------------------------------------------
 CWindow::~CWindow()
 //------------------------------------------------------------------------------
