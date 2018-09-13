@@ -480,7 +480,7 @@ void mat4_perspective ( mat4& m, double fovy, double aspect, double zNear, doubl
 void mat4_perspective (double* m, double fovy, double aspect, double zNear, double zFar)
 //-----------------------------------------------------------------------------
 {
-        double p = 1.0f / tanf(fovy * (M_PI/360.0));
+        double p = 1.0f / tanf(fovy * (pi/360.0));
 
 /*
         m[0] = z2 / aspect;
@@ -543,7 +543,7 @@ double d = 2.0 * zFar * zNear / (zNear - zFar);
 void mat4_ray_perspective (double* m, double fovy, double aspect )
 //-----------------------------------------------------------------------------
 {
-        double	p = 1.0f / tanf(fovy * (M_PI/360.0));
+        double	p = 1.0f / tanf(fovy * (pi/360.0));
 		double	ofs_x = 0.0;	//x	offset-x
 		double	ofs_y = 0.0;	//y	offset-y
 		double	ofs_z = -p;		//z	offset-z

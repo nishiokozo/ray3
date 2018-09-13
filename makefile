@@ -1,10 +1,11 @@
 SRCS	= CWindow.cpp vec.cpp
 TARGET	= main
 
-LDLIBS		= -lgdi32 -mconsole
+#LDLIBS		= -lgdi32 -mconsole
+LDLIBS		= -m64 -std=c++11 -lgdi32
 # -mwindows > 標準出力が出なくなる。
 # -static > main.o:(.text[__g_call_terminate]+0x7): `__imp___cxa_begin_catch' に対する定義されていない参照です
-
+CPPFLAGS    = -m64 -std=c++11
 OBJS	= $(TARGET).o $(SRCS:.cpp=.o)
 
 all : main.exe

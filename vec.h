@@ -7,7 +7,15 @@ void	mat4_rotateY( double* m, double th );
 void	mat4_rotateZ( double* m, double th );
 
 
-#define	pi	M_PI
+/*
+#ifndef M_PI
+ #define M_PI 3.141592654
+#endif
+*/
+
+//#define	pi	M_PI
+
+#define	pi	3.141592654
 class	ivec3
 {
 public:
