@@ -1,34 +1,40 @@
-SRCS	= CWindow.cpp vec.cpp
-TARGET	= main
+#邁｡逡･蠑塾akfefile for msys64 
 
-#LDLIBS		= -lgdi32 -mconsole
-LDLIBS		= -m64 -std=c++11 -lgdi32
-# -mwindows > 標準出力が出なくなる。
-# -static > main.o:(.text[__g_call_terminate]+0x7): `__imp___cxa_begin_catch' に対する定義されていない参照です
-CPPFLAGS    = -m64 -std=c++11
-OBJS	= $(TARGET).o $(SRCS:.cpp=.o)
+TAR = main.exe
 
-all : main.exe
+OBJS = \
+	obj/main.o \
+	obj/CWindow.o \
+	obj/vec.o \
 
-main.exe : makefile $(OBJS)
-	g++ -o main.exe $(OBJS) $(LDLIBS)
+LIBS = \
+	 -lgdi32
 
-main.o : main.cpp
-	g++ $(CPPFLAGS) -c -o $@ main.cpp
+FLGS = \
+	-c \
+	-m64 \
+	-std=c++14 \
+	-Wall \
+	-Werror \
+	-Wno-unknown-pragmas \
+	-Wno-unused-function \
+	-Wno-unused-variable \
+	-O3 \
 
-CWindow.o : CWindow.cpp CWindow.h
-	g++ $(CPPFLAGS) -c -o $@ CWindow.cpp
+CC	= clang++
+#CC	= g++
 
-vec.o : vec.cpp vec.h
-	g++ $(CPPFLAGS) -c -o $@ vec.cpp
+$(TAR)	:	obj $(OBJS) $(SHDR)
+	$(CC) -o $(TAR) $(OBJS) $(LIBS)
 
-s : $(SRCS)
-	g++ $(CPPFLAGS) -S main.cpp
-	g++ $(CPPFLAGS) -S CWindow.cpp
-	g++ $(CPPFLAGS) -S vec.cpp
+obj/%.o:%.cpp
+	$(CC)  $(FLGS) $< -o $@
 
+obj:
+	mkdir obj
 
 clean:
-	rm -f *.o *.exe
+	rm -f *.exe
+	rm -rf obj
 
 

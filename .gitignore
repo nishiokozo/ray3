@@ -1,2 +1,5 @@
+.netrc
+obj
 a.txt
 *.o
+*.s

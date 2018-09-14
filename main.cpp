@@ -18,11 +18,11 @@ const	static	double INFINIT = DBL_MAX;
 struct  COMMON
 {
 	vec3	C;
-	double	valReflectance;		//	”½Ë—¦
-	double	valRefractive;		//	‹üÜ—¦
+	double	valReflectance;		//	åå°„ç‡
+	double	valRefractive;		//	å±ˆæŠ˜ç‡
 	double	valPower;
 	double	valEmissive;
-	double	valTransmittance;	//	“§‰ß—¦
+	double	valTransmittance;	//	é€éç‡
 };
 
 
@@ -146,7 +146,7 @@ bool raycast( SURFACE& sur, const vec3& P, const vec3& I, double max_t, double v
 	sur.stat  = SURFACE::STAT_NONE;
 
 	
-	//	‹…
+	//	çƒ
 	for ( int i = 0 ; i < m_cntSphere ; i++ )
 	{
 		SPHERE&	obj = *m_tblSphere[i];
@@ -203,7 +203,7 @@ bool raycast( SURFACE& sur, const vec3& P, const vec3& I, double max_t, double v
 		}
 	}
 
-	//	°
+	//	åºŠ
 	for ( int i = 0 ; i < m_cntPlate ; i++ )
 	{
 		PLATE&	obj = *m_tblPlate[i];
@@ -278,7 +278,7 @@ SURFACE raygun( vec3& P, const vec3& I )
 	sur.stat  = SURFACE::STAT_NONE;
 
 	
-	//	‹…
+	//	çƒ
 	for ( int i = 0 ; i < m_cntSphere ; i++ )
 	{
 		SPHERE&	obj = *m_tblSphere[i];
@@ -340,7 +340,7 @@ SURFACE raygun( vec3& P, const vec3& I )
 		}
 	}
 
-	//	°
+	//	åºŠ
 	for ( int i = 0 ; i < m_cntPlate ; i++ )
 	{
 		PLATE&	obj = *m_tblPlate[i];
@@ -608,7 +608,7 @@ void	Paint( unsigned char* to, int height, int width, int size )
 			vec3	I = normalize(P - posEye);
 
 			double	valRefractive = 1.0;
-			int	cnt = 0;
+//   	int	cnt = 0;
 
 			m_cntRay = 0;
 			int	cntNext = 0;
