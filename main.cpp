@@ -653,7 +653,7 @@ int main()
 //------------------------------------------------------------------------------
 {
 	#define SIZ 512
-	CWindow	win(SIZ,SIZ,"Voxel Metaball   " __DATE__, RENDER_GDI24);
+	CWindow	win(SIZ,SIZ,"Raytracing   " __DATE__, RENDER_GDI24);
 
 //		printf("CC_MAX %fsec\n", INFINIT );
 
