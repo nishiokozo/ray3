@@ -15,7 +15,7 @@ using namespace std;
 
 const	static	double INFINIT = DBL_MAX;
 
-struct  COMMON
+struct  Common
 {
 	vec3	C;
 	double	valReflectance;		//	反射率
@@ -26,7 +26,7 @@ struct  COMMON
 };
 
 
-struct	SURFACE
+struct	Surface
 {
 	enum
 	{
@@ -56,7 +56,7 @@ struct	SURFACE
 	double	valEmissive;
 	double	valTransmittance;
 
-	SURFACE()
+	Surface()
 	{
 		memset( this, 0, sizeof(*this) );
 
@@ -65,12 +65,12 @@ struct	SURFACE
 };
 
 
-struct	CATALYST : public COMMON
+struct	Catalyst : public Common
 {
-	CATALYST( vec3 _C, double _valReflection, double _valRefractive, double _valPower, double _valEmissive, double _valTransmittance )
+	Catalyst( vec3 _c, double _valReflection, double _valRefractive, double _valPower, double _valEmissive, double _valTransmittance )
 	{
 		memset( this, 0, sizeof(*this) );
-		C = _C;
+		C = _c;
 		valReflectance	= _valReflection;
 		valRefractive	= _valRefractive;
 		valPower= _valPower;
@@ -79,17 +79,17 @@ struct	CATALYST : public COMMON
 	}
 };
 
-struct SPHERE : public COMMON
+struct Sphere : public Common
 {
 	vec3	P;
 	double	r;
 
-	SPHERE( const vec3& _P, double _r, vec3 _C, double _valReflection, double _valRefractive, double _valPower, double _valEmissive, double _valTransmittance )
+	Sphere( const vec3& _p, double _r, vec3 _c, double _valReflection, double _valRefractive, double _valPower, double _valEmissive, double _valTransmittance )
 	{
 		memset( this, 0, sizeof(*this));
-		P = _P;
+		P = _p;
 		r = _r;
-		C = max(0,min(1,_C));
+		C = max(0.0,min(1.0,_c));
 		valReflectance	= _valReflection;
 		valRefractive	= _valRefractive;
 		valPower= _valPower;
@@ -97,17 +97,17 @@ struct SPHERE : public COMMON
 		valTransmittance	= _valTransmittance;
 	};
 };
-struct PLATE : public COMMON
+struct Plate : public Common
 {
 	vec3	P;
 	vec3	N;
 
-	PLATE( const vec3& _P, const vec3& _N, vec3 _C, double _valReflection, double _valRefractive, double _valPower, double _valEmissive, double _valTransmittance )
+	Plate( const vec3& _p, const vec3& _n, vec3 _c, double _valReflection, double _valRefractive, double _valPower, double _valEmissive, double _valTransmittance )
 	{
 		memset( this, 0, sizeof(*this));
-		P = _P;
-		N = _N;
-		C = _C;
+		P = _p;
+		N = _n;
+		C = _c;
 		valReflectance = _valReflection;
 		valRefractive	= _valRefractive;
 		valPower = _valPower;
@@ -116,15 +116,15 @@ struct PLATE : public COMMON
 	};
 };
 
-struct	LIGHT
+struct	Light
 {
 	vec3	P;
 	vec3	C;
 
-	LIGHT( const vec3& _P, const vec3& _C )
+	Light( const vec3& _p, const vec3& _c )
 	{
-		P = _P;
-		C = _C;
+		P = _p;
+		C = _c;
 	}
 };
 
@@ -136,20 +136,20 @@ public:
 int m_cntRay;
 
 //------------------------------------------------------------------------------
-bool raycast( SURFACE& sur, const vec3& P, const vec3& I, double max_t, double valRefractive )
+bool raycast( Surface& sur, const vec3& P, const vec3& I, double max_t, double valRefractive )
 //------------------------------------------------------------------------------
 {
 
 	bool	flg = false;
 
 	sur.t  = max_t;
-	sur.stat  = SURFACE::STAT_NONE;
+	sur.stat  = Surface::STAT_NONE;
 
 	
 	//	球
 	for ( int i = 0 ; i < m_cntSphere ; i++ )
 	{
-		SPHERE&	obj = *m_tblSphere[i];
+		Sphere&	obj = *m_tblSphere[i];
 
 		vec3	O = obj.P;
 		double	r = obj.r;
@@ -206,7 +206,7 @@ bool raycast( SURFACE& sur, const vec3& P, const vec3& I, double max_t, double v
 	//	床
 	for ( int i = 0 ; i < m_cntPlate ; i++ )
 	{
-		PLATE&	obj = *m_tblPlate[i];
+		Plate&	obj = *m_tblPlate[i];
 
 		double	f = dot(obj.N,P - obj.P);
 		if ( f > 0 )
@@ -215,7 +215,7 @@ bool raycast( SURFACE& sur, const vec3& P, const vec3& I, double max_t, double v
 
 			if ( sur.t >= t && t >= 0 )
 			{
-				sur.stat = SURFACE::STAT_FRONT;
+				sur.stat = Surface::STAT_FRONT;
 
 				sur.t = t; 
 
@@ -263,10 +263,10 @@ bool raycast( SURFACE& sur, const vec3& P, const vec3& I, double max_t, double v
 }
 
 //------------------------------------------------------------------------------
-SURFACE raygun( vec3& P, const vec3& I )
+Surface raygun( vec3& P, const vec3& I )
 //------------------------------------------------------------------------------
 {
-	SURFACE sur;
+	Surface sur;
 
 	P += I*2e-10;
 
@@ -275,13 +275,13 @@ SURFACE raygun( vec3& P, const vec3& I )
 	sur.flg = false;
 
 	sur.t  = INFINIT;
-	sur.stat  = SURFACE::STAT_NONE;
+	sur.stat  = Surface::STAT_NONE;
 
 	
 	//	球
 	for ( int i = 0 ; i < m_cntSphere ; i++ )
 	{
-		SPHERE&	obj = *m_tblSphere[i];
+		Sphere&	obj = *m_tblSphere[i];
 
 		vec3	O = obj.P;
 		double	r = obj.r;
@@ -312,7 +312,7 @@ SURFACE raygun( vec3& P, const vec3& I )
 
 				sur.Q = I * t + P;
 
-				if ( stat == SURFACE::STAT_BACK )
+				if ( stat == Surface::STAT_BACK )
 				{
 					sur.N = -normalize(sur.Q - O);
 				}
@@ -343,7 +343,7 @@ SURFACE raygun( vec3& P, const vec3& I )
 	//	床
 	for ( int i = 0 ; i < m_cntPlate ; i++ )
 	{
-		PLATE&	obj = *m_tblPlate[i];
+		Plate&	obj = *m_tblPlate[i];
 
 		double	f = dot(obj.N,P - obj.P);
 		if ( f > 0 )
@@ -352,7 +352,7 @@ SURFACE raygun( vec3& P, const vec3& I )
 
 			if ( sur.t >= t && t >= 0 )
 			{
-				sur.stat = SURFACE::STAT_FRONT;
+				sur.stat = Surface::STAT_FRONT;
 
 				sur.t = t; 
 
@@ -432,22 +432,22 @@ vec3	getAsmosphereLight( const vec3& I )
 	return	col;
 }
 
-SPHERE*	m_tblSphere[1000];
-PLATE*	m_tblPlate[1000];
-LIGHT*	m_tblLight[1000];
+Sphere*	m_tblSphere[1000];
+Plate*	m_tblPlate[1000];
+Light*	m_tblLight[1000];
 int		m_cntSphere;
 int		m_cntPlate;
 int		m_cntLight;
 vec3	A;
-void	Entry( SPHERE* a )
+void	Entry( Sphere* a )
 {
 	m_tblSphere[ m_cntSphere++ ] = a;
 }
-void	Entry( PLATE* a )
+void	Entry( Plate* a )
 {
 	m_tblPlate[ m_cntPlate++ ] = a;
 }
-void	Entry( LIGHT* a )
+void	Entry( Light* a )
 {
 	m_tblLight[ m_cntLight++ ] = a;
 }
@@ -470,28 +470,28 @@ Test()
 	vec3	P,C,N;
 
 #if 0
-	Entry( new PLATE( P=vec3( 0  ,  0 ,0.0),N=vec3(0,1,0),C=vec3(0.8,0.8,0.8),rl=0.5,rr=1.0 ,pw=20,e= 0.0,tm=0.0 ) );
-	Entry( new SPHERE(vec3( 0.0 , 1.25, -2       ),   0.5 , vec3(1  , 0.2, 0.2), 0.5, 1.0, 20, 0.0, 0.0 ) );
-	Entry( new SPHERE(vec3( 0.0 , 0.5 , -2-0.433 ),   0.5 , vec3(0.0, 0.0, 0.0), 1.0, 1.0, 20, 0.0, 0.0 ) );
-	Entry( new SPHERE(vec3( 0.5 , 0.5 , -2+0.433 ),   0.5 , vec3(0.2, 0.2, 1.0), 0.5, 1.0, 20, 0.0, 0.0 ) );
-	Entry( new SPHERE(vec3(-0.5 , 0.5 , -2+0.433 ),   0.5 , vec3(0.0, 1.0, 0.0), 0.5, 1.0, 20, 0.0, 0.0 ) );
-	Entry( new LIGHT( vec3( 4   ,  2 , -1 ), vec3(0.6, 0.8, 1.0)*40 ) );
-	Entry( new LIGHT( vec3( -1  ,  2 ,  -3 ), vec3(1.0, 0.8, 0.6)*10 ) );
+	Entry( new Plate( P=vec3( 0  ,  0 ,0.0),N=vec3(0,1,0),C=vec3(0.8,0.8,0.8),rl=0.5,rr=1.0 ,pw=20,e= 0.0,tm=0.0 ) );
+	Entry( new Sphere(vec3( 0.0 , 1.25, -2       ),   0.5 , vec3(1  , 0.2, 0.2), 0.5, 1.0, 20, 0.0, 0.0 ) );
+	Entry( new Sphere(vec3( 0.0 , 0.5 , -2-0.433 ),   0.5 , vec3(0.0, 0.0, 0.0), 1.0, 1.0, 20, 0.0, 0.0 ) );
+	Entry( new Sphere(vec3( 0.5 , 0.5 , -2+0.433 ),   0.5 , vec3(0.2, 0.2, 1.0), 0.5, 1.0, 20, 0.0, 0.0 ) );
+	Entry( new Sphere(vec3(-0.5 , 0.5 , -2+0.433 ),   0.5 , vec3(0.0, 1.0, 0.0), 0.5, 1.0, 20, 0.0, 0.0 ) );
+	Entry( new Light( vec3( 4   ,  2 , -1 ), vec3(0.6, 0.8, 1.0)*40 ) );
+	Entry( new Light( vec3( -1  ,  2 ,  -3 ), vec3(1.0, 0.8, 0.6)*10 ) );
 	A = vec3( 0.2,0.4,0.6)*0.0;
 #endif
 #if 0 //5 balls
-	Entry( new PLATE( vec3( 0   ,  0 ,  0    ), normalize(vec3(0, 1,0))  , vec3(0.8, 0.8, 0.8), 0.5, 20, 0.0, 0.0 ) );
-	Entry( new SPHERE(vec3(-2.0 , 0.5 , -2 ),   0.5 , vec3(0.0, 0.0, 0.0), 1.0 , 1.0, 20, 0.0, 0.0 ) );
-	Entry( new SPHERE(vec3(-1.0 , 0.5 , -2 ),   0.5 , vec3(0.0, 0.0, 0.0), 0.75, 1.0, 20, 0.0, 0.0 ) );
-	Entry( new SPHERE(vec3( 0.0 , 0.5 , -2 ),   0.5 , vec3(0.0, 0.0, 0.0), 0.5 , 1.0, 20, 0.0, 0.0 ) );
-	Entry( new SPHERE(vec3( 1.0 , 0.5 , -2 ),   0.5 , vec3(0.0, 0.0, 0.0), 0.25, 1.0, 20, 0.0, 0.0 ) );
-	Entry( new SPHERE(vec3( 2.0 , 0.5 , -2 ),   0.5 , vec3(0.0, 0.0, 0.0), 0.0 , 1.0, 20, 0.0, 0.0 ) );
-	Entry( new LIGHT( vec3( 0   ,  20 ,  -2 ), vec3(1.0, 1.0, 1.0)*800 ) );
+	Entry( new Plate( vec3( 0   ,  0 ,  0    ), normalize(vec3(0, 1,0))  , vec3(0.8, 0.8, 0.8), 0.5, 20, 0.0, 0.0 ) );
+	Entry( new Sphere(vec3(-2.0 , 0.5 , -2 ),   0.5 , vec3(0.0, 0.0, 0.0), 1.0 , 1.0, 20, 0.0, 0.0 ) );
+	Entry( new Sphere(vec3(-1.0 , 0.5 , -2 ),   0.5 , vec3(0.0, 0.0, 0.0), 0.75, 1.0, 20, 0.0, 0.0 ) );
+	Entry( new Sphere(vec3( 0.0 , 0.5 , -2 ),   0.5 , vec3(0.0, 0.0, 0.0), 0.5 , 1.0, 20, 0.0, 0.0 ) );
+	Entry( new Sphere(vec3( 1.0 , 0.5 , -2 ),   0.5 , vec3(0.0, 0.0, 0.0), 0.25, 1.0, 20, 0.0, 0.0 ) );
+	Entry( new Sphere(vec3( 2.0 , 0.5 , -2 ),   0.5 , vec3(0.0, 0.0, 0.0), 0.0 , 1.0, 20, 0.0, 0.0 ) );
+	Entry( new Light( vec3( 0   ,  20 ,  -2 ), vec3(1.0, 1.0, 1.0)*800 ) );
 	A = vec3( 0.2,0.4,0.6)*1.0;
 #endif
 #if 1 // ring
-	Entry( new PLATE( P=vec3( 0  ,  0 ,0.0),N=vec3(0,1,0),C=vec3(0.8,0.8,0.8),rl=0.5,rr=1.0 ,pw=20,e= 0.0,tm=0.0 ) );
-	Entry( new SPHERE(  vec3( 0 , 1.0 , 0 ),   0.5 ,  vec3(0.0, 0.0, 0.0),   0.5,   1.0 ,  100,  0.0,  0.0 ) );
+	Entry( new Plate( P=vec3( 0  ,  0 ,0.0),N=vec3(0,1,0),C=vec3(0.8,0.8,0.8),rl=0.5,rr=1.0 ,pw=20,e= 0.0,tm=0.0 ) );
+	Entry( new Sphere(  vec3( 0 , 1.0 , 0 ),   0.5 ,  vec3(0.0, 0.0, 0.0),   0.5,   1.0 ,  100,  0.0,  0.0 ) );
 	int	max = 16*3;
 	for ( int i = 0 ; i < max ; i++ )
 	{
@@ -501,34 +501,34 @@ Test()
 		double	z = sin(th) ;
 		double	y = cos(th2) +1.2;
 //		double	y = (x+z)/2 +1.0;
-		Entry( new SPHERE(P=vec3( x , y , z ),r=0.2 ,C=vec3( x, y,  z) ,rl=0.2,rr=0.0 ,pw=100,e= 0.0,tm=0.0 ) );
+		Entry( new Sphere(P=vec3( x , y , z ),r=0.2 ,C=vec3( x, y,  z) ,rl=0.2,rr=0.0 ,pw=100,e= 0.0,tm=0.0 ) );
 
 	}
-	Entry( new LIGHT( vec3( 0   ,  30 ,  0 ), vec3(1,1,1)*1800 )  );
-	Entry( new LIGHT( vec3(-30   ,  30 ,  0 ), vec3(0.5,1,1)*1800 )  );
-	Entry( new LIGHT( vec3(60   ,  80 ,  0 ), vec3(1,1,0.5)*4800 )  );
-	Entry( new LIGHT( vec3(-60   ,  80 , 0 ), vec3(1,0.5,1)*4800 )  );
+	Entry( new Light( vec3( 0   ,  30 ,  0 ), vec3(1,1,1)*1800 )  );
+	Entry( new Light( vec3(-30   ,  30 ,  0 ), vec3(0.5,1,1)*1800 )  );
+	Entry( new Light( vec3(60   ,  80 ,  0 ), vec3(1,1,0.5)*4800 )  );
+	Entry( new Light( vec3(-60   ,  80 , 0 ), vec3(1,0.5,1)*4800 )  );
 	A = vec3( 0.2,0.4,0.6)*0.0;
 #endif
 #if 0 //twin balls
-	Entry( new PLATE( vec3( 0   ,  0 ,  0    ), normalize(vec3(0, 1,0))  , vec3(0.8, 0.8, 0.8), 0.5, 1.0, 20, 0.0, 0.0 ) );
-	Entry( new SPHERE(vec3(-1.0 , 1.0 , -2 ),   1.0 , vec3(1.0, 0.5, 0.5), 0.2, 1.0, 20, 0.0, 0.0 ) );
-	Entry( new SPHERE(vec3( 1.0 , 1.0 , -2 ),   1.0 , vec3(0.0, 0.0, 0.0), 0.2, 1.0, 20, 0.0, 0.0 ) );
-	Entry( new LIGHT( vec3( 0   ,  20 ,  -2 ), vec3(1.0, 1.0, 1.0)*1800 ) );
+	Entry( new Plate( vec3( 0   ,  0 ,  0    ), normalize(vec3(0, 1,0))  , vec3(0.8, 0.8, 0.8), 0.5, 1.0, 20, 0.0, 0.0 ) );
+	Entry( new Sphere(vec3(-1.0 , 1.0 , -2 ),   1.0 , vec3(1.0, 0.5, 0.5), 0.2, 1.0, 20, 0.0, 0.0 ) );
+	Entry( new Sphere(vec3( 1.0 , 1.0 , -2 ),   1.0 , vec3(0.0, 0.0, 0.0), 0.2, 1.0, 20, 0.0, 0.0 ) );
+	Entry( new Light( vec3( 0   ,  20 ,  -2 ), vec3(1.0, 1.0, 1.0)*1800 ) );
 	A = vec3( 0.2,0.4,0.6)*1.0;
 #endif
 #if 0 //2 balls
-//	Entry( new PLATE( P=vec3(0  , 0 ,0.0),N=vec3(0,1,0),C=vec3(0.8,0.8,0.8),rl=0.5,rr=1.0 ,pw=20,e= 0.0,tm=0.0 ) );
-//	Entry( new SPHERE(P=vec3( 1.0,1.0, 3.0),r=0.9       ,C=vec3(1.0,0.5,0.5),rl=0.3,rr=1.35,pw=20,e=10.0,tm=1.0 ) );
+//	Entry( new Plate( P=vec3(0  , 0 ,0.0),N=vec3(0,1,0),C=vec3(0.8,0.8,0.8),rl=0.5,rr=1.0 ,pw=20,e= 0.0,tm=0.0 ) );
+//	Entry( new Sphere(P=vec3( 1.0,1.0, 3.0),r=0.9       ,C=vec3(1.0,0.5,0.5),rl=0.3,rr=1.35,pw=20,e=10.0,tm=1.0 ) );
 
-//	Entry( new SPHERE(P=vec3( 1.0,0.25, 3),r=1.0      ,C=vec3(1.0,1.0,1.0),rl=0.5,rr=1.0 ,pw=20,e=10.0,tm=0.0 ) );
-//	Entry( new SPHERE(P=vec3( 0.9,1.5,-1.0),r=1.0       ,C=vec3(0.0,0.0,1.0),rl=0.0,rr=1.02,pw=20,e=10.0,tm=1.0 ) );
-	Entry( new SPHERE(P=vec3( 0.5,1.0,3.0),r=0.5       ,C=vec3(0.0,0.0,1.0),rl=0.5,rr=1.0 ,pw=20,e=10.0,tm=0.0 ) );
-	Entry( new SPHERE(P=vec3(-0.5,1.0,3.0),r=0.5       ,C=vec3(0.0,1.0,0.0),rl=0.5,rr=1.0 ,pw=20,e=10.0,tm=0.0 ) );
-	Entry( new SPHERE(P=vec3( 0.0,1.5,3.0),r=0.5       ,C=vec3(1.0,0.0,0.0),rl=0.5,rr=1.0 ,pw=20,e=10.0,tm=0.0 ) );
-	Entry( new SPHERE(P=vec3( 0.0,0.5,3.0),r=0.5       ,C=vec3(1.0,1.0,0.0),rl=0.5,rr=1.0 ,pw=20,e=10.0,tm=0.0 ) );
-	Entry( new SPHERE(P=vec3( 0.0,1.0,2.75),r=0.25      ,C=vec3(1.0,1.0,1.0),rl=0.5,rr=1.0 ,pw=20,e=10.0,tm=0.0 ) );
-	Entry( new LIGHT( P=vec3( 1.0 ,15, 0 )          ,C=vec3(1,1,1)*360 )  );
+//	Entry( new Sphere(P=vec3( 1.0,0.25, 3),r=1.0      ,C=vec3(1.0,1.0,1.0),rl=0.5,rr=1.0 ,pw=20,e=10.0,tm=0.0 ) );
+//	Entry( new Sphere(P=vec3( 0.9,1.5,-1.0),r=1.0       ,C=vec3(0.0,0.0,1.0),rl=0.0,rr=1.02,pw=20,e=10.0,tm=1.0 ) );
+	Entry( new Sphere(P=vec3( 0.5,1.0,3.0),r=0.5       ,C=vec3(0.0,0.0,1.0),rl=0.5,rr=1.0 ,pw=20,e=10.0,tm=0.0 ) );
+	Entry( new Sphere(P=vec3(-0.5,1.0,3.0),r=0.5       ,C=vec3(0.0,1.0,0.0),rl=0.5,rr=1.0 ,pw=20,e=10.0,tm=0.0 ) );
+	Entry( new Sphere(P=vec3( 0.0,1.5,3.0),r=0.5       ,C=vec3(1.0,0.0,0.0),rl=0.5,rr=1.0 ,pw=20,e=10.0,tm=0.0 ) );
+	Entry( new Sphere(P=vec3( 0.0,0.5,3.0),r=0.5       ,C=vec3(1.0,1.0,0.0),rl=0.5,rr=1.0 ,pw=20,e=10.0,tm=0.0 ) );
+	Entry( new Sphere(P=vec3( 0.0,1.0,2.75),r=0.25      ,C=vec3(1.0,1.0,1.0),rl=0.5,rr=1.0 ,pw=20,e=10.0,tm=0.0 ) );
+	Entry( new Light( P=vec3( 1.0 ,15, 0 )          ,C=vec3(1,1,1)*360 )  );
 	A = vec3( 0.2,0.4,0.6)*0.5;
 #endif
 }
@@ -542,21 +542,25 @@ vec3 Raytrack( vec3 P, vec3 I )
 	if ( m_cntRay > 5 ) return ret;
 	m_cntRay++;
 
-	SURFACE sur;
-	LIGHT&	lgt = *m_tblLight[0];
-	vec3	Lc,L;
-	float	d,s=0,r=0,t=0;
+	Surface sur;
+	Light&	lgt = *m_tblLight[0];
+	vec3	Lc;
+	vec3	L;
+	float	d;
+	float	s=0;
+	float	r=0;
+	float	t=0;
 	
 	if ( (sur = raygun( P, I )).flg )
 	{
-		L = normalize(sur.Q - lgt.P);
-		Lc = lgt.C / dot(sur.Q - lgt.P, sur.Q - lgt.P);
-		d =       max( 0, dot( sur.N, -L ) );
-		s =  (sur.valPower+2)/(8*pi)*pow( max( 0, dot( sur.R, -L ) ), sur.valPower );
-		r = sur.valReflectance;
+		L	= normalize(sur.Q - lgt.P);
+		Lc	= lgt.C / dot(sur.Q - lgt.P, sur.Q - lgt.P);
+		d	= max( 0.0, dot( sur.N, -L ) );
+		s	= (sur.valPower+2)/(8*pi)*pow( max( 0.0, dot( sur.R, -L ) ), sur.valPower );
+		r	= sur.valReflectance;
 		ret += r* (Raytrack( sur.Q, sur.R )+s) * Lc;
 
-		if ( sur.valTransmittance == 0 )
+		if ( sur.valTransmittance == 0.0 )
 		{
 			ret += (1-r)*( d * sur.C ) * Lc;
 		}

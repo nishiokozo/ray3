@@ -40,7 +40,7 @@ public:
 
 };
 
-
+/*
 typedef	struct
 {
 	double	x;	
@@ -48,7 +48,7 @@ typedef	struct
 	double	z;	
 	double	w;	
 } vector;
-
+*/
 class	vec2
 {
 public:
@@ -555,43 +555,39 @@ public:
 
 };
 
-double	vec3_dotproduct( double a[3], double b[3] );
-
-void	vec3_crossproduct( double v[3], double a[3], double b[3] );
-vec3	       cross( const vec3& a, const vec3& b );
-
-void	vec3_normalize( double v[3] );
-void	vec3_normalize( vec3* v );
-double	vec3_length( double v[3] );
-double	vec3_length( vec3& v );
-
-void	vec4_multiplyMatrix( double v[4], double m[16], double a[4] );
-
-double	dot( const vec3& a, const vec3& b );
-
+extern double	vec3_dotproduct( double a[3], double b[3] );
+extern void		vec3_crossproduct( double v[3], double a[3], double b[3] );
+extern vec3	       cross( const vec3& a, const vec3& b );
+extern void		vec3_normalize( double v[3] );
+extern void		vec3_normalize( vec3* v );
+extern double	vec3_length( double v[3] );
+extern double	vec3_length( vec3& v );
+extern void		vec4_multiplyMatrix( double v[4], double m[16], double a[4] );
+extern double	dot( const vec3& a, const vec3& b );
 //double	dot( vec4& a, vec3& b );
 //double	dot( vec3& a, vec4& b );
 //double	dot( vec4& a, vec4& b );
 
-vec3 refract( const vec3& a, const vec3& b, double n );
-vec3 reflect( const vec3& I, const vec3& N );
+extern vec3 refract( const vec3& a, const vec3& b, double n );
+extern vec3 reflect( const vec3& I, const vec3& N );
 
 //double	abs( double );
-double	max( double a, double b );
-vec3	max( double a, const vec3& b );
-vec3	max( const vec3& b, double a );
-double	min( double a, double b );
-vec3	min( double a, const vec3& b );
-vec3	min( const vec3& b, double a );
 
-vec3	mix( double f, const vec3& a, const vec3& b );
-double	mod( double a, double b );
-double	length( const vec2& a );
-double	length( const vec3& a );
-double	length( const vec3& a, const vec3& b );
-vec2	normalizXe( const vec2& a );
-vec3	normalizXe( const vec3& a );
-vec3	normalize( const vec3& a );
+extern double	max( double a, double b );
+extern vec3		max( const double a, const vec3& b );
+extern vec3		max( const vec3& b, double a );
+extern double	min( double a, double b );
+extern vec3		min( double a, const vec3& b );
+extern vec3		min( const vec3& b, double a );
+///
+extern vec3	mix( double f, const vec3& a, const vec3& b );
+extern double	mod( double a, double b );
+extern double	length( const vec2& a );
+extern double	length( const vec3& a );
+extern double	length( const vec3& a, const vec3& b );
+extern vec2	normalizXe( const vec2& a );
+extern vec3	normalizXe( const vec3& a );
+extern vec3	normalize( const vec3& a );
 
 
 #define	RAD(n)	((n)*M_PI/180.0f)

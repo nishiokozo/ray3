@@ -2,3 +2,4 @@ obj
 a.txt
 *.o
 *.s
+*.bak

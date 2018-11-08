@@ -13,16 +13,17 @@ LIBS = \
 FLGS = \
 	-c \
 	-m64 \
-	-std=c++14 \
+	-std=c++17 \
 	-Wall \
-	-Werror \
 	-Wno-unknown-pragmas \
 	-Wno-unused-function \
 	-Wno-unused-variable \
 	-O3 \
 
-CC	= clang++
-#CC	= g++
+#	-Werror \
+
+#CC	= clang++
+CC	= g++
 
 $(TAR)	:	obj $(OBJS) $(SHDR)
 	$(CC) -o $(TAR) $(OBJS) $(LIBS)
