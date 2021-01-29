@@ -12,14 +12,14 @@ LIBS = \
 
 FLGS = \
 	-c \
-	-m64 \
-	-std=c++17 \
+	-std=c++14 \
 	-Wall \
 	-Wno-unknown-pragmas \
 	-Wno-unused-function \
 	-Wno-unused-variable \
 	-O3 \
 
+#	-m64 \
 #	-Werror \
 
 #CC	= clang++
